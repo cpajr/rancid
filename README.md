@@ -12,9 +12,9 @@ Before use, the user must populate the following items:
 + *api_url_base*: in my case, I wanted to focus on the device roles available within Netbox.  In this case, the base url is *https://<URL>/api/dcim/devices/?role=*.  I will then append the various device roles and iterate through them.  
 
 ### Bulk Change
-Rancid is great in issuing a single or group of commands to a single device.  However, it lacks the functionality to do the same to a group of devices.  In this case, I wrote a Python script to query the existing *router.db* files to issues commands.  
+Rancid is great in issuing a single or group of commands to a single device.  However, it lacks the functionality to do the same to a group of devices.  In this case, I wrote a Python script to query the existing *router.db* files to issues commands.  Please see the notes included the script for more information.  
 
-Assumptions:
+In addition to those notes, please see the following assumptions:
 
 1. The devices are already registered and used by Rancid under router.db files.  This script does not verify that the device listed in router.db is a Cisco device.
 2. If the -u flag is not used, then the login information must be provided under the users .cloginrc file 
