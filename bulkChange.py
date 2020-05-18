@@ -7,13 +7,46 @@ import os.path
 import sys
 from getpass import getpass
 
-baseDirPath = "/home/charlesallen"
-#baseDirPath = "/usr/local/rancid/var"
+'''
+************************************************************
+This script is used push bulk changes to devices registered
+with Rancid through the Rancid script clogin.  This script
+is exclusive for use with Cisco only devices.  
+
+Reference the MAN page for clogin within Rancid.  Also 
+leverage the -h or --help under the script.  
+
+Author: Charles Allen
+Date: 18 May 2020
+
+Assumptions:
+
+- 	the devices are already registered and used by Rancid 
+	under router.db files.  This script does not verify 
+	that the device listed in router.db is a Cisco device.
+
+- 	if the -u flag is not used, then the login information
+	must be provided under the users .cloginrc file
+
+- 	For the global variable baseDirPath, it must be pointed
+	to the base directory where the config files are store.
+	In this case, it is written for /usr/local/rancid/var. 
+
+
+************************************************************
+'''
+
+
+
+baseDirPath = "/usr/local/rancid/var"
 cloginPath = "/usr/local/rancid/bin/clogin"
 
 
 def getRouterDbList (rancid_group):
 
+	'''
+	Pull the list of devices from the group router.db file
+	'''
 	theGroup = rancid_group
 	routerDbFile = "{}/{}/router.db".format(baseDirPath,theGroup)
 	returnList = []
@@ -33,6 +66,9 @@ def getRouterDbList (rancid_group):
 
 def singleCmd (group, single_cmd,usrname = "none",passwd = "none"):
 
+	'''
+	Subroutine used to issue a single command to a group of devices.  
+	'''
 	theGroupList = getRouterDbList(group)
 	theCmd = single_cmd
 
@@ -47,6 +83,9 @@ def singleCmd (group, single_cmd,usrname = "none",passwd = "none"):
 
 def multiCmd (group, command_file,usrname = "none",passwd = "none"):
 
+	'''
+	Subroutine used to issue a group of commands to a group of devices.  
+	'''
 	theGroupList = getRouterDbList(group)
 	cmdFile = command_file
 
@@ -64,6 +103,10 @@ def multiCmd (group, command_file,usrname = "none",passwd = "none"):
 		os.system(command)
 
 def getPasswd():
+	
+	'''
+	Subroutine used to gather the password for an alternative user.    
+	'''
 	verifyPass = True
 
 	while (verifyPass):
@@ -80,6 +123,9 @@ def getPasswd():
 
 def getUsername():
 
+	'''
+	Subroutine used to gather the alternative username.    
+	'''
 	verifyUser = True
 
 	while (verifyUser):
@@ -107,9 +153,8 @@ parser.add_argument("-g", "--group", type=str, required=True, help='Operation ag
 parser.add_argument("-c", "--command", type=str, help="Single command to execute")
 parser.add_argument("-x", "--command-list", type=str, help="Specify file to execute a list of commands")
 parser.add_argument("-u", "--username", action="store_true", help="Override cloginrc username.  Script will prompt for username and password")
-
-
 args = parser.parse_args()
+
 
 if not args.command and not args.command_list:
 	print ("ERROR: No suitable command was provided -- please try again with either -c or -x flag")
