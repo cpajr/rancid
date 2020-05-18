@@ -7,7 +7,8 @@ import os.path
 import sys
 from getpass import getpass
 
-baseDirPath = "/usr/local/rancid/var"
+baseDirPath = "/home/charlesallen"
+#baseDirPath = "/usr/local/rancid/var"
 cloginPath = "/usr/local/rancid/bin/clogin"
 
 
@@ -38,7 +39,10 @@ def singleCmd (group, single_cmd,usrname = "none",passwd = "none"):
 	for i in theGroupList:
 		if usrname == "none":
 			command = "{} -c \"{}\" {}".format(cloginPath, theCmd, i)
+		else:
+			command = "{} -c \"{}\" -u {} -p {} {}".format(cloginPath, theCmd, usrname, passwd, i)
 
+		#print (command)
 		os.system(command)
 
 def multiCmd (group, command_file,usrname = "none",passwd = "none"):
@@ -52,8 +56,11 @@ def multiCmd (group, command_file,usrname = "none",passwd = "none"):
 		sys.exit()
 
 	for i in theGroupList:
-		command = "{} -x {} {}".format(cloginPath, cmdFile, i)
-		print (command)
+		if usrname == "none":
+			command = "{} -x {} {}".format(cloginPath, cmdFile, i)
+		else:
+			command = "{} -c \"{}\" -u {} -p {} {}".format(cloginPath, theCmd, usrname, passwd, i)
+		#print (command)
 		os.system(command)
 
 def getPasswd():
@@ -69,7 +76,6 @@ def getPasswd():
 		else:
 			verifyPass = False
 
-	#return password
 	return password1
 
 def getUsername():
@@ -85,6 +91,8 @@ def getUsername():
 			continue
 		else:
 			print ("Not a valid response")
+
+	return theUsername
 
 
 '''
@@ -103,13 +111,18 @@ parser.add_argument("-u", "--username", action="store_true", help="Override clog
 
 args = parser.parse_args()
 
-if args.username:
-	getUsername()
-	getPasswd()
+if not args.command and not args.command_list:
+	print ("ERROR: No suitable command was provided -- please try again with either -c or -x flag")
+	sys.exit()
 
-# if args.command:
-# 	singleCmd(group = args.group,single_cmd = args.command)
-# elif args.command_list:
-# 	multiCmd(group = args.group,command_file = args.command_list)
-# else:
-# 	print ("ERROR: No suitable argument was provided -- please try again.")
+if args.username:
+	passUsername = getUsername()
+	passPasswd = getPasswd()
+else:
+	passUsername = "none"
+	passPasswd = "none"
+
+if args.command:
+	singleCmd(group = args.group,single_cmd = args.command,usrname = passUsername,passwd = passPasswd)
+elif args.command_list:
+	multiCmd(group = args.group,command_file = args.command_list,usrname = passUsername,passwd = passPasswd)
